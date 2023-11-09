@@ -1,9 +1,10 @@
 ﻿using IN_lab3.Models;
 using IN_lab3.Services.UserService;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace IN_lab3.Controllers
 {
@@ -14,10 +15,15 @@ namespace IN_lab3.Controllers
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
 
+        private readonly SymmetricSecurityKey securityKey;
+        private readonly SigningCredentials credentials;
+
         public UserController(ILogger<UserController> logger, IUserService userService)
         {
             _logger = logger;
             _userService = userService;
+            securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_key"));
+            credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         }
 
         [HttpPost("Signup")]
@@ -30,7 +36,7 @@ namespace IN_lab3.Controllers
                 return BadRequest(check_credentials);
             }
 
-            if(_userService.IsUserNameUsed(username!))
+            if (_userService.IsUserNameUsed(username!))
             {
                 return BadRequest("Username already used!");
             }
@@ -42,7 +48,7 @@ namespace IN_lab3.Controllers
             catch
             {
                 return StatusCode(500, "Internal Server Error");
-            }            
+            }
 
             return Ok();
         }
@@ -61,11 +67,23 @@ namespace IN_lab3.Controllers
 
             if (user == null)
             {
-                return BadRequest("User with this username not exists!");               
+                return BadRequest("User with this username not exists!");
             }
             else if (user.CheckCredentials(password, user.Salt!))
             {
-                return Ok(user.Id);
+                var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Username!) };                
+
+                var token = new JwtSecurityToken(
+                    issuer: "issuer",
+                    audience: "audience",
+                    claims: claims,
+                    expires: DateTime.Now.AddHours(1),
+                    signingCredentials: credentials
+                );
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+                return Ok(new { Token = tokenString });
             }
             else
             {
