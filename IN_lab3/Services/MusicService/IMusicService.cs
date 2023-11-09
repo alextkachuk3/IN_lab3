@@ -6,7 +6,7 @@ namespace IN_lab3.Services.MusicService
     {
         public Music? GetMusic(Guid id);
 
-        public void UploadMusic(Music music, User user);
+        public void UploadMusic(Music music);
 
         public void DeleteMusic(Guid id, User user);
 

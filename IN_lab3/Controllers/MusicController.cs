@@ -15,14 +15,21 @@ namespace IN_lab3.Controllers
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
         private readonly IMusicService _musicService;
+        private readonly string uploadsFolder;
 
         public MusicController(ILogger<UserController> logger, IUserService userService, IMusicService musicService)
         {
             _logger = logger;
             _userService = userService;
             _musicService = musicService;
-        }
+            uploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
 
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+        }
 
         [Authorize]
         [HttpPost("Upload")]
@@ -33,13 +40,24 @@ namespace IN_lab3.Controllers
                 return BadRequest("Invalid file");
             }
 
-            var uploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            Guid id = Guid.NewGuid();
+            string filePath = Path.Combine(uploadsFolder, id.ToString());
 
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
+            }
+
+            User user = _userService.GetUser(User.Identity!.Name!)!;
+            Music music = new Music(id, name, file.Length, user);
+
+            try
+            {
+                _musicService.UploadMusic(music);
+            }
+            catch
+            {
+                return StatusCode(500, "Internal Server Error");
             }
 
             return Ok("File uploaded successfully");

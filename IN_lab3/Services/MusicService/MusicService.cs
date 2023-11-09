@@ -56,11 +56,11 @@ namespace IN_lab3.Services.MusicService
             return _dbContext.Music?.Where(i => i.User!.Equals(user)).ToList();
         }
 
-        public void UploadMusic(Music music, User user)
+        public void UploadMusic(Music music)
         {
             try
             {
-                _dbContext.Music?.Add(new Music(music.Id, music.Name!, music.FileSize, user));
+                _dbContext.Music?.Add(music);
             }
             catch
             {
