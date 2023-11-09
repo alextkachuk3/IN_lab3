@@ -12,5 +12,7 @@ namespace IN_lab3.Data
 
         public DbSet<User>? Users { get; set; }
 
+        public DbSet<Music>? Music { get; set; }
+
     }
 }
