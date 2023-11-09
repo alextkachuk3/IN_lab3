@@ -31,7 +31,7 @@ namespace IN_lab3.Services.MusicService
                     finally
                     {
                         _dbContext.SaveChanges();
-                        File.Delete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music", id.ToString()));
+                        DeleteMusic(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music", id.ToString()));
                     }
                 }
                 else
@@ -39,6 +39,11 @@ namespace IN_lab3.Services.MusicService
                     throw new InvalidOperationException("User tried to delete a music file that doesn't own!");
                 }
             }
+        }
+
+        public void DeleteMusic(string filePath)
+        {
+            File.Delete(filePath);
         }
 
         public List<Music>? GetAllMusic()

@@ -2,9 +2,7 @@
 using IN_lab3.Services.MusicService;
 using IN_lab3.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace IN_lab3.Controllers
 {
@@ -48,6 +46,12 @@ namespace IN_lab3.Controllers
                 await file.CopyToAsync(fileStream);
             }
 
+            if(!IsFileMP3(filePath))
+            {
+                _musicService.DeleteMusic(filePath);
+                return BadRequest("Invalid file");
+            }
+
             User user = _userService.GetUser(User.Identity!.Name!)!;
             Music music = new Music(id, name, file.Length, user);
 
@@ -61,6 +65,22 @@ namespace IN_lab3.Controllers
             }
 
             return Ok("File uploaded successfully");
+        }
+
+        private bool IsFileMP3(string filePath)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                if (fs.Length < 4)
+                {
+                    return false;
+                }
+
+                byte[] header = new byte[3];
+                fs.Read(header, 0, 3);
+
+                return header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33;
+            }
         }
     }
 }

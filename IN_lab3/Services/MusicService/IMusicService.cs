@@ -10,6 +10,8 @@ namespace IN_lab3.Services.MusicService
 
         public void DeleteMusic(Guid id, User user);
 
+        public void DeleteMusic(string filePath);
+
         List<Music>? GetUserMusic(User user);
 
         List<Music>? GetAllMusic();
