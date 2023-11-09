@@ -1,5 +1,6 @@
 using IN_lab3.Models;
 using IN_lab3.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IN_lab3.Controllers
@@ -22,7 +23,7 @@ namespace IN_lab3.Controllers
             _userService = userService;
         }
 
-
+        [Authorize]
         [HttpGet(Name = "GetUsers")]
         public IEnumerable<User> GetUsers()
         {

@@ -1,6 +1,9 @@
 ﻿using IN_lab3.Models;
 using IN_lab3.Services.UserService;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace IN_lab3.Controllers
 {
@@ -17,8 +20,8 @@ namespace IN_lab3.Controllers
             _userService = userService;
         }
 
-        [HttpPost("Registration")]
-        public IActionResult Registration(string? username, string? password)
+        [HttpPost("Signup")]
+        public IActionResult Signup(string? username, string? password)
         {
             string? check_credentials = CheckCredentials(username, password);
 
@@ -42,6 +45,32 @@ namespace IN_lab3.Controllers
             }            
 
             return Ok();
+        }
+
+        [HttpPost("Login")]
+        public IActionResult Login(string username, string password)
+        {
+            User? user = _userService.GetUser(username);
+
+            var check_credentials = CheckCredentials(username, password);
+
+            if (check_credentials is not null)
+            {
+                return BadRequest(check_credentials);
+            }
+
+            if (user == null)
+            {
+                return BadRequest("User with this username not exists!");               
+            }
+            else if (user.CheckCredentials(password, user.Salt!))
+            {
+                return Ok(user.Id);
+            }
+            else
+            {
+                return BadRequest("Wrong username or password!");
+            }
         }
 
         private string? CheckCredentials(string? username, string? password)
