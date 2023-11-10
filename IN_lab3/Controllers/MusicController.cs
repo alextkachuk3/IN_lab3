@@ -29,6 +29,29 @@ namespace IN_lab3.Controllers
 
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetMusicFile(string id)
+        {
+            Music? music = _musicService.GetMusic(Guid.Parse(id));
+
+            if (music == null)
+            {
+                return NotFound();
+            }
+
+            var filePath = Path.Combine(uploadsFolder, music.Id.ToString());
+
+            if (System.IO.File.Exists(filePath))
+            {
+                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                return File(fileStream, "audio/mpeg");
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         [Authorize]
         [HttpPost("Upload")]
         public async Task<IActionResult> Upload(IFormFile file, string name)
