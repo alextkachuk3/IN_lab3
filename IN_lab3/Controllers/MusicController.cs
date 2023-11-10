@@ -53,6 +53,15 @@ namespace IN_lab3.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        public IEnumerable<MusicDto> GetUserMusic()
+        {
+            User user = _userService.GetUser(User.Identity!.Name!)!;
+            List<Music> music = _musicService.GetUserMusic(user)!;
+            return music.Select(music => new MusicDto(music.Id, music.Name!)).ToArray();
+        }
+
+        [Authorize]
         [HttpPost("Upload")]
         public async Task<IActionResult> Upload(IFormFile file, string name)
         {

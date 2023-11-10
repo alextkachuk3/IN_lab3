@@ -77,7 +77,7 @@ namespace IN_lab3.Controllers
                     issuer: "issuer",
                     audience: "audience",
                     claims: claims,
-                    expires: DateTime.Now.AddHours(1),
+                    expires: DateTime.Now.AddYears(1),
                     signingCredentials: credentials
                 );
 
