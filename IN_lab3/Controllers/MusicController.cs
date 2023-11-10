@@ -63,11 +63,16 @@ namespace IN_lab3.Controllers
 
         [Authorize]
         [HttpPost("Upload")]
-        public async Task<IActionResult> Upload(IFormFile file, string name)
+        public async Task<IActionResult> Upload(IFormFile file, string? name)
         {
             if (file == null || file.Length <= 0)
             {
                 return BadRequest("Invalid file");
+            }
+
+            if (name == null || name.Length < 5 || name.Length > 70)
+            {
+                return BadRequest("Invalid name");
             }
 
             Guid id = Guid.NewGuid();

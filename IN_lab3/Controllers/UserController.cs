@@ -54,22 +54,22 @@ namespace IN_lab3.Controllers
         }
 
         [HttpPost("Login")]
-        public IActionResult Login(string username, string password)
+        public IActionResult Login(UserDto userDto)
         {
-            User? user = _userService.GetUser(username);
-
-            var check_credentials = CheckCredentials(username, password);
+            var check_credentials = CheckCredentials(userDto.Username, userDto.Password);
 
             if (check_credentials is not null)
             {
                 return BadRequest(check_credentials);
             }
 
+            User? user = _userService.GetUser(userDto.Username!);          
+
             if (user == null)
             {
                 return BadRequest("User with this username not exists!");
             }
-            else if (user.CheckCredentials(password, user.Salt!))
+            else if (user.CheckCredentials(userDto.Password!, user.Salt!))
             {
                 var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Username!) };                
 

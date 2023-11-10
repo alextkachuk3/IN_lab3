@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace IN_lab3.Models
+﻿namespace IN_lab3.Models
 {
     public class MusicDto
     {
@@ -13,6 +11,6 @@ namespace IN_lab3.Models
 
         public Guid Id { get; set; }
 
-        public string? Name { get; set; }
+        public string Name { get; set; }
     }
 }
