@@ -27,30 +27,30 @@ namespace IN_lab3.Controllers
         }
 
         [HttpPost("Signup")]
-        public IActionResult Signup(string? username, string? password)
+        public IActionResult Signup(UserDto userDto)
         {
-            string? check_credentials = CheckCredentials(username, password);
+            string? check_credentials = CheckCredentials(userDto.Username, userDto.Password);
 
             if (check_credentials is not null)
             {
                 return BadRequest(check_credentials);
             }
 
-            if (_userService.IsUserNameUsed(username!))
+            if (_userService.IsUserNameUsed(userDto.Username!))
             {
                 return BadRequest("Username already used!");
             }
 
             try
             {
-                _userService.AddUser(username!, password!);
+                _userService.AddUser(userDto.Username, userDto.Password);
             }
             catch
             {
                 return StatusCode(500, "Internal Server Error");
             }
 
-            return Ok();
+            return Login(userDto);
         }
 
         [HttpPost("Login")]
@@ -63,7 +63,7 @@ namespace IN_lab3.Controllers
                 return BadRequest(check_credentials);
             }
 
-            User? user = _userService.GetUser(userDto.Username!);          
+            User? user = _userService.GetUser(userDto.Username!);
 
             if (user == null)
             {
@@ -71,7 +71,7 @@ namespace IN_lab3.Controllers
             }
             else if (user.CheckCredentials(userDto.Password!, user.Salt!))
             {
-                var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Username!) };                
+                var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.Username!) };
 
                 var token = new JwtSecurityToken(
                     issuer: "issuer",
