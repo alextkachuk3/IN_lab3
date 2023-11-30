@@ -38,7 +38,7 @@ namespace IN_lab3.Controllers
 
             if (_userService.IsUserNameUsed(userDto.Username!))
             {
-                return BadRequest("Username already used!");
+                return BadRequest(new { Error = "username_already_used" });
             }
 
             try
@@ -47,7 +47,7 @@ namespace IN_lab3.Controllers
             }
             catch
             {
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(500, new { Error = "internal_server_error" });
             }
 
             return Login(userDto);
@@ -60,14 +60,14 @@ namespace IN_lab3.Controllers
 
             if (check_credentials is not null)
             {
-                return BadRequest(check_credentials);
+                return BadRequest(new { Error = check_credentials });
             }
 
             User? user = _userService.GetUser(userDto.Username!);
 
             if (user == null)
             {
-                return BadRequest("User with this username not exists!");
+                return BadRequest(new { Error = "user_not_exists" });
             }
             else if (user.CheckCredentials(userDto.Password!, user.Salt!))
             {
@@ -87,7 +87,7 @@ namespace IN_lab3.Controllers
             }
             else
             {
-                return BadRequest("Wrong username or password!");
+                return BadRequest(new { Error = "wrong_username_or_password" });
             }
         }
 

@@ -67,12 +67,12 @@ namespace IN_lab3.Controllers
         {
             if (file == null || file.Length <= 0)
             {
-                return BadRequest("Invalid file");
+                return BadRequest(new { Error = "invalid_file" });
             }
 
-            if (name == null || name.Length < 5 || name.Length > 70)
+            if (name == null || name.Length < 1 || name.Length > 70)
             {
-                return BadRequest("Invalid name");
+                return BadRequest(new { Error = "invalid_name" });
             }
 
             Guid id = Guid.NewGuid();
@@ -83,10 +83,10 @@ namespace IN_lab3.Controllers
                 await file.CopyToAsync(fileStream);
             }
 
-            if(!IsFileMP3(filePath))
+            if (!IsFileMP3(filePath))
             {
                 _musicService.DeleteMusic(filePath);
-                return BadRequest("Invalid file");
+                return BadRequest(new { Error = "invalid_file" });
             }
 
             User user = _userService.GetUser(User.Identity!.Name!)!;
@@ -98,10 +98,10 @@ namespace IN_lab3.Controllers
             }
             catch
             {
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(500, new { Error = "internal_server_error" });
             }
 
-            return Ok("File uploaded successfully");
+            return Ok(new { Message = "file_uploaded_successfully" });
         }
 
         private bool IsFileMP3(string filePath)
