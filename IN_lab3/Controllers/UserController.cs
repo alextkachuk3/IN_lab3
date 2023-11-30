@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IN_lab3.Controllers
 {
@@ -89,6 +90,13 @@ namespace IN_lab3.Controllers
             {
                 return BadRequest(new { Error = "wrong_username_or_password" });
             }
+        }
+
+        [Authorize]
+        [HttpGet("Username")]
+        public IActionResult GetUsername()
+        {
+            return Ok(new { Username = _userService.GetUser(User.Identity!.Name!)!.Username });
         }
 
         private string? CheckCredentials(string? username, string? password)
