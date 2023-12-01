@@ -34,7 +34,7 @@ namespace IN_lab3.Controllers
 
             if (check_credentials is not null)
             {
-                return BadRequest(check_credentials);
+                return BadRequest(new { Error = check_credentials });
             }
 
             if (_userService.IsUserNameUsed(userDto.Username!))
