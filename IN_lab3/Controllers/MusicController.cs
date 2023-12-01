@@ -63,7 +63,7 @@ namespace IN_lab3.Controllers
 
         [Authorize]
         [HttpPost("Upload")]
-        public async Task<IActionResult> Upload(IFormFile file, string? name)
+        public async Task<IActionResult> Upload(IFormFile file, [FromForm]string? name)
         {
             if (file == null || file.Length <= 0)
             {
