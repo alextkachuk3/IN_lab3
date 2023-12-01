@@ -68,7 +68,7 @@ namespace IN_lab3.Controllers
 
             if (user == null)
             {
-                return BadRequest(new { Error = "user_not_exists" });
+                return BadRequest(new { Error = "wrong_username_or_password" });
             }
             else if (user.CheckCredentials(userDto.Password!, user.Salt!))
             {
@@ -96,39 +96,39 @@ namespace IN_lab3.Controllers
         [HttpGet("Username")]
         public IActionResult GetUsername()
         {
-            return Ok(new { Username = _userService.GetUser(User.Identity!.Name!)!.Username });
+            return Ok(new { _userService.GetUser(User.Identity!.Name!)!.Username });
         }
 
         private string? CheckCredentials(string? username, string? password)
         {
             if (username is null)
             {
-                return "Username is empty";
+                return "username_is_empty";
             }
 
             if (password is null)
             {
-                return "Password is empty";
+                return "password_is_empty";
             }
 
             if (username.Length > 30)
             {
-                return "Length of username is bigger than max!";
+                return "username_length_is_bigger_than_30";
             }
 
             if (username.Length < 5)
             {
-                return "Minimal username lenght is 5!";
+                return "username_lenght_is_smaller_than_5";
             }
 
             if (!Models.User.IsAlphanumeric(username))
             {
-                return "Username contains special chars!";
+                return "username_contains_special_chars";
             }
 
             if (!Models.User.IsAlphanumeric(password))
             {
-                return "Username contains special chars!";
+                return "password_contains_special_chars";
             }
 
             return null;
